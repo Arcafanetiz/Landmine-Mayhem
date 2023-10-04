@@ -7,7 +7,6 @@ public class CharacterMovement : MonoBehaviour
     public float moveSpeed;
     public float turnSpeed;
 
-    private Vector3 turnDirection;
     private Rigidbody characterRigid;
     void Start()
     {
@@ -19,41 +18,31 @@ public class CharacterMovement : MonoBehaviour
     }
     private void DoMovement()
     {
-        turnDirection = Vector3.zero;
-        if (Input.GetKey(KeyCode.W))
-        {
-            turnDirection += cameraTransform.forward;
-            DoTurn();
-            characterRigid.velocity = transform.forward * moveSpeed;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            turnDirection += -cameraTransform.forward;
-            DoTurn();
-            characterRigid.velocity = transform.forward * moveSpeed;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            turnDirection += -cameraTransform.right;
-            DoTurn();
-            characterRigid.velocity = transform.forward * moveSpeed;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            turnDirection += cameraTransform.right;
-            DoTurn();
-            characterRigid.velocity = transform.forward * moveSpeed;
-        }
-    }
-    private void DoTurn()
-    {
-        Vector3 forward = transform.forward;
-        if (turnDirection.magnitude > 0f)
-        {
-            forward = Vector3.ProjectOnPlane(turnDirection, Vector3.up);
-        }
-        Quaternion turnTo = Quaternion.LookRotation(forward, Vector3.up);
+        Vector3 inputDirection = Vector3.zero;
 
-        characterRigid.transform.rotation = Quaternion.RotateTowards(transform.rotation, turnTo, turnSpeed * Time.deltaTime);
+        Vector3 cameraForward = cameraTransform.forward;
+        Vector3 cameraRight = cameraTransform.right;
+
+        cameraForward.y = 0f;
+        cameraRight.y = 0f;
+        cameraForward.Normalize();
+        cameraRight.Normalize();
+
+        inputDirection += Input.GetAxis("Vertical") * cameraForward;
+        inputDirection += Input.GetAxis("Horizontal") * cameraRight;
+
+        inputDirection = Vector3.ClampMagnitude(inputDirection, 1f);
+
+        if (inputDirection != Vector3.zero)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(inputDirection);
+
+            lookRotation.x = 0f;
+            lookRotation.z = 0f;
+
+            characterRigid.rotation = Quaternion.RotateTowards(characterRigid.rotation, lookRotation, turnSpeed * Time.fixedDeltaTime);
+        }
+
+        characterRigid.velocity = inputDirection * moveSpeed;
     }
 }
