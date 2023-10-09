@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    [Header("Spawn Y Offset Settings")]
     public float spawnYOffset;
+    [Header("Enemy Spawn Settings")]
     public int maxEnemy;
     public GameObject enemyPrefab;
 
@@ -24,13 +26,15 @@ public class EnemySpawner : MonoBehaviour
     }
     public void SpawnEnemy()
     {
+        //Check if maximum amount of enemy exists
         if (enemyCount < maxEnemy)
         {
+            //Choose random spawn
             int randomIndex = Random.Range(1, enemySpawns.Length);
             Transform spawnPoint = enemySpawns[randomIndex];
-
+            //Calculate spawn position
             Vector3 spawnPosition = spawnPoint.position + Vector3.up * spawnYOffset;
-
+            //Spawn enemy and parent to holder
             GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
             newEnemy.transform.parent = enemyHolder.transform;
         }

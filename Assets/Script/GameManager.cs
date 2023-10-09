@@ -8,13 +8,17 @@ using UnityEngine.UI;
 
 public class GameManager: MonoBehaviour
 {
+    [Header("Runtime Debug")]
     public bool debugComplete = false;
 
     [HideInInspector] public bool gameComplete = false;
+    [Header("Setting Time Settings")]
     public int sessionLength = 300;
-    public float timer = 0.0f;
+    [HideInInspector] public float timer = 0.0f;
 
-    public float enemySpeed;
+
+    [HideInInspector] public float enemySpeed;
+    [Header("Enemy Speed Range Settings")]
     public float enemySpeedStart = 1.0f;
     public float enemySpeedMax = 5.0f;
 
@@ -26,6 +30,9 @@ public class GameManager: MonoBehaviour
 
     private EnemySpawner spawner;
     private int lastSecondSpawned;
+
+    private readonly string TIMERFORMAT = "{0}:{1:00}";
+    private readonly string WINNERTEXT = "YOU WIN!";
     private void Start()
     {
         character   = GameObject.Find("Character");
@@ -42,15 +49,19 @@ public class GameManager: MonoBehaviour
     {
         if (!character)
         {
+            //Do game over if character dies
             DoGameover();
         }
         else
         {
+            //Run timer
             timer -= Time.deltaTime;
             int seconds = (int)(timer % 60);
             int minutes = (int)(timer / 60);
-            string timerString = string.Format("{0}:{1:00}", minutes, seconds);
+            //Apply timer to interface
+            string timerString = string.Format(TIMERFORMAT, minutes, seconds);
             timerUI.transform.Find("TextLabel").GetComponent<Text>().text = timerString;
+            //Game State based on timer
             if ((timer <= 0) && (gameComplete == false))
             {
                 DoWin();
@@ -59,7 +70,9 @@ public class GameManager: MonoBehaviour
             {
                 DoWin();
             }
+            //Increase enemy speed from max session length to win time
             enemySpeed = Mathf.Lerp(1.0f, enemySpeedMax / enemySpeedStart, 1.0f - (timer / sessionLength));
+            //Spawns enemy every second
             if (lastSecondSpawned != seconds)
             {
                 spawner.SpawnEnemy();
@@ -67,18 +80,21 @@ public class GameManager: MonoBehaviour
             lastSecondSpawned = seconds;
         }
     }
+    //Main function for winning
     public void DoWin()
     {
         CompleteGame();
-        gameoverUI.transform.Find("TextLabel").GetComponent<Text>().text = "YOU WIN!";
+        gameoverUI.transform.Find("TextLabel").GetComponent<Text>().text = WINNERTEXT;
         gameoverUI.SetActive(true);
         timerUI.SetActive(false);
     }
+    //Main function for losing
     public void DoGameover()
     {
         CompleteGame();
         gameoverUI.SetActive(true);
     }
+    //Sub function complete game, used by both win/lost
     private void CompleteGame()
     {
         gameComplete = true;
@@ -86,8 +102,10 @@ public class GameManager: MonoBehaviour
         enemyHolder.SetActive(false);
         trapHolder.SetActive(false);
     }
+    //Restart game
     public void ActionRestart()
     {
+        
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void ActionMenu()

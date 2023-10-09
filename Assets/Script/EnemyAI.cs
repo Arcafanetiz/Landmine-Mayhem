@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
+    [Header("Movement Settings")]
     public float moveSpeed;
     public float turnSpeed;
 
@@ -21,6 +22,7 @@ public class EnemyAI : MonoBehaviour
         moveSpeed = gameManager.enemySpeed;
         if (target != null)
         {
+            //Get Direction and move enemy towards character
             Vector3 direction = (target.transform.position - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(direction);
 
@@ -30,6 +32,7 @@ public class EnemyAI : MonoBehaviour
     }
     void OnTriggerEnter(Collider collision)
     {
+        //Kill player upon contact
         if (collision.gameObject.CompareTag("Player"))
         {
             Destroy(collision.gameObject);

@@ -5,7 +5,9 @@ using UnityEngine.TextCore.Text;
 
 public class LandmineSpawner : MonoBehaviour
 {
+    [Header("Insert")]
     public GameObject landminePrefab;
+    [Header("Landmine Spawner Settings")]
     public float spawnDistanceThreshold;
 
     private Vector3 initialPlayerPosition;
@@ -21,6 +23,7 @@ public class LandmineSpawner : MonoBehaviour
     {
         if (character)
         {
+            //Spawn landmine after a distance has been reached
             float distanceMoved = Vector3.Distance(initialPlayerPosition, character.position);
 
             if (distanceMoved >= spawnDistanceThreshold)
