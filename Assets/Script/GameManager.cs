@@ -12,10 +12,9 @@ public class GameManager: MonoBehaviour
     public bool debugComplete = false;
 
     [HideInInspector] public bool gameComplete = false;
+    [HideInInspector] public float timer = 0.0f;
     [Header("Setting Time Settings")]
     public int sessionLength = 300;
-    [HideInInspector] public float timer = 0.0f;
-
 
     [HideInInspector] public float enemySpeed;
     [Header("Enemy Speed Range Settings")]
@@ -108,6 +107,7 @@ public class GameManager: MonoBehaviour
         
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+    //Return to main menus
     public void ActionMenu()
     {
         Debug.Log("Hi! You wanted to go to the menu, but there's not one yet!");
