@@ -8,45 +8,44 @@ using UnityEngine.UI;
 
 public class GameManager: MonoBehaviour
 {
-    [Header("Runtime Debug")]
-    public bool debugComplete = false;
+    [HideInInspector] public static float EnemySpeed;
 
     [HideInInspector] public bool gameComplete = false;
     [HideInInspector] public float timer = 0.0f;
+
+    [Header("Runtime Debug")]
+    [SerializeField] private bool debugComplete = false;
+    [Header("Attach GameObject")]
+    [SerializeField] private Transform mainCharacter;
+    [SerializeField] private GameObject enemyHolder;
+    [SerializeField] private GameObject trapHolder;
+    [SerializeField] private GameObject gameoverUI;
+    [SerializeField] private GameObject timerUI;
+    [SerializeField] private Text gameoverTextLabel;
+    [SerializeField] private Text timerTextLabel;
     [Header("Setting Time Settings")]
-    public int sessionLength = 300;
-
-    [HideInInspector] public float enemySpeed;
+    [SerializeField] private int sessionLength = 300;
     [Header("Enemy Speed Range Settings")]
-    public float enemySpeedStart = 1.0f;
-    public float enemySpeedMax = 5.0f;
-
-    private GameObject character;
-    private GameObject gameoverUI;
-    private GameObject timerUI;
-    private GameObject enemyHolder;
-    private GameObject trapHolder;
+    [SerializeField] private float enemySpeedStart = 1.0f;
+    [SerializeField] private float enemySpeedMax = 5.0f;
 
     private EnemySpawner spawner;
     private int lastSecondSpawned;
 
-    private readonly string TIMERFORMAT = "{0}:{1:00}";
-    private readonly string WINNERTEXT = "YOU WIN!";
+    private const string TimerFormat = "{0}:{1:00}";
+    private const string WinnerText = "YOU WIN!";
+    private const int SecondPerMinute = 60;
+    private const int Zero = 0;
+    private const int One = 1;
     private void Start()
     {
-        character   = GameObject.Find("Character");
-        gameoverUI  = GameObject.Find("Gameover");
-        timerUI     = GameObject.Find("Timer");
-        enemyHolder = GameObject.Find("EnemyHolder");
-        trapHolder  = GameObject.Find("TrapHolder");
-
-        spawner = enemyHolder.GetComponent<EnemySpawner>();
+        spawner = GetComponent<EnemySpawner>();
         timer = sessionLength;
         gameoverUI.SetActive(false);
     }
-    void Update()
+    private void Update()
     {
-        if (!character)
+        if (!mainCharacter)
         {
             //Do game over if character dies
             DoGameover();
@@ -55,22 +54,22 @@ public class GameManager: MonoBehaviour
         {
             //Run timer
             timer -= Time.deltaTime;
-            int seconds = (int)(timer % 60);
-            int minutes = (int)(timer / 60);
+            int seconds = (int)(timer % SecondPerMinute);
+            int minutes = (int)(timer / SecondPerMinute);
             //Apply timer to interface
-            string timerString = string.Format(TIMERFORMAT, minutes, seconds);
-            timerUI.transform.Find("TextLabel").GetComponent<Text>().text = timerString;
+            string timerString = string.Format(TimerFormat, minutes, seconds);
+            timerTextLabel.text = timerString;
             //Game State based on timer
-            if ((timer <= 0) && (gameComplete == false))
+            if ((timer <= Zero) && !gameComplete)
             {
                 DoWin();
             }
-            if ((debugComplete == true) && (gameComplete == false))
+            if (debugComplete && !gameComplete)
             {
                 DoWin();
             }
             //Increase enemy speed from max session length to win time
-            enemySpeed = Mathf.Lerp(1.0f, enemySpeedMax / enemySpeedStart, 1.0f - (timer / sessionLength));
+            EnemySpeed = Mathf.Lerp(enemySpeedStart, enemySpeedMax, One - (timer / sessionLength));
             //Spawns enemy every second
             if (lastSecondSpawned != seconds)
             {
@@ -83,7 +82,7 @@ public class GameManager: MonoBehaviour
     public void DoWin()
     {
         CompleteGame();
-        gameoverUI.transform.Find("TextLabel").GetComponent<Text>().text = WINNERTEXT;
+        gameoverTextLabel.text = WinnerText;
         gameoverUI.SetActive(true);
         timerUI.SetActive(false);
     }
@@ -104,7 +103,6 @@ public class GameManager: MonoBehaviour
     //Restart game
     public void ActionRestart()
     {
-        
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     //Return to main menus

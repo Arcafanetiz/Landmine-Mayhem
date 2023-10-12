@@ -5,24 +5,25 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    [Header("Attach GameObject")]
+    [SerializeField] private Transform enemyHolder;
+    [SerializeField] private Transform spawnSet;
     [Header("Spawn Y Offset Settings")]
-    public float spawnYOffset;
+    [SerializeField] private float spawnYOffset = 1;
     [Header("Enemy Spawn Settings")]
-    public int maxEnemy;
-    public GameObject enemyPrefab;
+    [SerializeField] private int maxEnemy;
+    [SerializeField] private GameObject enemyPrefab;
 
     private Transform[] enemySpawns;
     private int enemyCount;
 
-    private GameObject enemyHolder;
-    void Start()
+    private void Start()
     {
-        enemySpawns = GameObject.Find("SpawnSet").GetComponentsInChildren<Transform>();
-        enemyHolder = GameObject.Find("EnemyHolder");
+        enemySpawns = spawnSet.GetComponentsInChildren<Transform>();
     }
-    void Update()
+    private void Update()
     {
-        enemyCount = enemyHolder.transform.childCount;
+        enemyCount = enemyHolder.childCount;
     }
     public void SpawnEnemy()
     {
@@ -36,7 +37,7 @@ public class EnemySpawner : MonoBehaviour
             Vector3 spawnPosition = spawnPoint.position + Vector3.up * spawnYOffset;
             //Spawn enemy and parent to holder
             GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-            newEnemy.transform.parent = enemyHolder.transform;
+            newEnemy.transform.parent = enemyHolder;
         }
     }
 }

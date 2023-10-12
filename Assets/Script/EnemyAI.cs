@@ -5,35 +5,35 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float moveSpeed;
-    public float turnSpeed;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float turnSpeed;
 
-    private Rigidbody rigid;
-    private GameObject target;
-    private GameManager gameManager;
-    void Start()
+    private Rigidbody enemyRigid;
+    private GameObject targetToChase;
+
+    private const string PlayerTag = "Player";
+    private void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        rigid = GetComponent<Rigidbody>();
-        target = GameObject.Find("Character");
+        enemyRigid = GetComponent<Rigidbody>();
+        targetToChase = GameObject.FindWithTag(PlayerTag);
     }
-    void Update()
+    private void Update()
     {
-        moveSpeed = gameManager.enemySpeed;
-        if (target != null)
+        moveSpeed = GameManager.EnemySpeed;
+        if (targetToChase)
         {
             //Get Direction and move enemy towards character
-            Vector3 direction = (target.transform.position - transform.position).normalized;
+            Vector3 direction = (targetToChase.transform.position - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(direction);
 
             transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, turnSpeed * Time.deltaTime);
-            rigid.velocity = transform.forward * moveSpeed;
+            enemyRigid.velocity = transform.forward * moveSpeed;
         }
     }
-    void OnTriggerEnter(Collider collision)
+    private void OnTriggerEnter(Collider collision)
     {
         //Kill player upon contact
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag(PlayerTag))
         {
             Destroy(collision.gameObject);
             Destroy(gameObject);

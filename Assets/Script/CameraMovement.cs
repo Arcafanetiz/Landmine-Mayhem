@@ -1,59 +1,60 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class CameraMovement : MonoBehaviour
 {
-    [Header("Insert")]
-    public Transform targetTransform;
-    public LayerMask obstacleLayerMask;
-
+    [Header("Attach GameObject")]
+    [SerializeField] private Transform targetToFollow;
+    [Header("Set Layer")]
+    [SerializeField] private LayerMask obstacleLayerMask;
     [Header("Turn Speed Settings")]
-    public float speedX = 200f;
-    public float speedY = 200f;
+    [SerializeField] private float speedX = 500f;
+    [SerializeField] private float speedY = 500f;
     [Header("Pitch Settings")]
-    public float minY = 60f;
-    public float maxY = 80f;
+    [SerializeField] private float minY = 25f;
+    [SerializeField] private float maxY = 60f;
     [Header("Orbit Distance Settings")]
-    public float orbitDistance = 5f;
-    public float minOrbitDistance = 0.6f;
+    [SerializeField] private float orbit = 10f;
+    [SerializeField] private float minOrbit = 0.6f;
+    [SerializeField] private float maxOrbitToCheck = 10f;
 
     private float currentXAngle;
     private float currentYAngle;
-
     private RaycastHit obstacleHit;
 
-    private readonly float FULLCIRCLE = 360f;
-    private readonly float MAXORBITDISTANCECHECK = 10f;
-    private readonly int NEGATE = -1;
-    void Start()
+    private const string MouseXAxisName = "Mouse X";
+    private const string MouseYAxisName = "Mouse Y";
+    private const float FullCircle = 360f;
+    private const int Negative = -1;
+    private const int Zero = 0;
+    private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
-    void LateUpdate()
+    private void LateUpdate()
     {
-        if (targetTransform != null)
+        if (targetToFollow)
         {
             //Get Camera Angle by X Axis
-            currentXAngle += Input.GetAxis("Mouse X") * speedX * Time.deltaTime;
-            currentXAngle = (currentXAngle + FULLCIRCLE) % FULLCIRCLE;
+            currentXAngle += Input.GetAxis(MouseXAxisName) * speedX * Time.deltaTime;
+            currentXAngle = (currentXAngle + FullCircle) % FullCircle;
 
             //Get Camera Angle by Y Axis, Opposite Direction
-            currentYAngle += Input.GetAxis("Mouse Y") * speedY * Time.deltaTime * NEGATE;
+            currentYAngle += Input.GetAxis(MouseYAxisName) * speedY * Time.deltaTime * Negative;
             currentYAngle = Mathf.Clamp(currentYAngle, minY, maxY);
 
             //Turn Camera to Result Angle
-            transform.rotation = Quaternion.Euler(currentYAngle, currentXAngle, 0);
+            transform.rotation = Quaternion.Euler(currentYAngle, currentXAngle, Zero);
 
             //Check Obstruction
-            float resultOrbit = orbitDistance;
-            if (Physics.Raycast(transform.position, -transform.forward, out obstacleHit, MAXORBITDISTANCECHECK, obstacleLayerMask))
+            float resultOrbit = orbit;
+            if (Physics.Raycast(transform.position, -transform.forward, out obstacleHit, maxOrbitToCheck, obstacleLayerMask))
             {
-                resultOrbit = obstacleHit.distance;
+                resultOrbit = Mathf.Max(obstacleHit.distance, minOrbit);
             }
             //Perform Orbit Distance
-            transform.position = targetTransform.position - (transform.forward * resultOrbit);
+            transform.position = targetToFollow.position - (transform.forward * resultOrbit);
         }
     }
 }

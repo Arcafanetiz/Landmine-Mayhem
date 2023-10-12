@@ -237,7 +237,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 218349465}
-  - component: {fileID: 218349466}
   m_Layer: 0
   m_Name: EnemyHolder
   m_TagString: Untagged
@@ -260,21 +259,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1723826848}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &218349466
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 218349464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f1a021c63bae924fb7efa1a5b785cbe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnYOffset: 1
-  maxEnemy: 10
-  enemyPrefab: {fileID: 7296952144223573711, guid: 6093b9c5d30649a48a1e8678384faa95, type: 3}
 --- !u!1 &296495269
 GameObject:
   m_ObjectHideFlags: 0
@@ -1035,7 +1019,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea84298dc5ae22a44a8393f8493d6e5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetTransform: {fileID: 1715302795}
+  targetToFollow: {fileID: 1715302795}
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -1043,8 +1027,9 @@ MonoBehaviour:
   speedY: 500
   minY: 25
   maxY: 60
-  orbitDistance: 10
-  minOrbitDistance: 0.6
+  orbit: 10
+  minOrbit: 0.6
+  maxOrbitToCheck: 0.6
 --- !u!1 &1055698257
 GameObject:
   m_ObjectHideFlags: 0
@@ -2053,7 +2038,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9cd849293876954699be69025d21cec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 963194228}
+  mainCamera: {fileID: 963194228}
   moveSpeed: 4
   turnSpeed: 360
 --- !u!136 &1715302798
@@ -2089,6 +2074,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1723826848}
   - component: {fileID: 1723826849}
+  - component: {fileID: 1723826850}
+  - component: {fileID: 1723826851}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2127,13 +2114,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a67ad17807ee244a9ad0ae4cf1e2085, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugComplete: 0
   gameComplete: 0
-  sessionLength: 300
   timer: 0
   enemySpeed: 0
+  debugComplete: 0
+  mainCharacter: {fileID: 1715302795}
+  enemyHolder: {fileID: 218349464}
+  trapHolder: {fileID: 1759146477}
+  gameoverUI: {fileID: 1406899585}
+  timerUI: {fileID: 2007461848}
+  gameoverTextLabel: {fileID: 355275028}
+  timerTextLabel: {fileID: 1314120759}
+  sessionLength: 150
   enemySpeedStart: 1
   enemySpeedMax: 5
+--- !u!114 &1723826850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1723826847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f1a021c63bae924fb7efa1a5b785cbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyHolder: {fileID: 218349465}
+  spawnSet: {fileID: 296495270}
+  spawnYOffset: 1
+  maxEnemy: 10
+  enemyPrefab: {fileID: 7296952144223573711, guid: 6093b9c5d30649a48a1e8678384faa95, type: 3}
+--- !u!114 &1723826851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1723826847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b62992ad6584870448d3ec24daa4e1c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  landminePrefab: {fileID: 430819973153699662, guid: 1e623bca22f50a745bc87e7b1a741a17, type: 3}
+  mainCharacter: {fileID: 1715302795}
+  trapHolder: {fileID: 1759146478}
+  spawnThreshold: 3
 --- !u!1 &1759146477
 GameObject:
   m_ObjectHideFlags: 0
@@ -2143,7 +2170,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1759146478}
-  - component: {fileID: 1759146479}
   m_Layer: 0
   m_Name: TrapHolder
   m_TagString: Untagged
@@ -2166,20 +2192,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1723826848}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1759146479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1759146477}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b62992ad6584870448d3ec24daa4e1c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  landminePrefab: {fileID: 430819973153699662, guid: 1e623bca22f50a745bc87e7b1a741a17, type: 3}
-  spawnDistanceThreshold: 3
 --- !u!1 &1793462099
 GameObject:
   m_ObjectHideFlags: 0
