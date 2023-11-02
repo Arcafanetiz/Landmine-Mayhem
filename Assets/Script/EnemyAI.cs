@@ -4,18 +4,27 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
+    // Movement Settings
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float turnSpeed;
+    [SerializeField] private float moveSpeed = 1f;      //AI Movement Speed
+    [SerializeField] private float turnSpeed = 360f;    //AI Turn Speed
 
+    // Damage Settings
+    [Header("Damage Settings")]
+    [SerializeField] private float damage = 20f;            //AI Damage on touch
+    [SerializeField] private float selfDamage = 10f;        //AI Take own damage on touch
+    [SerializeField] private float selfKnockPower = 100f;    //AI Knock self back on touch
+
+    // Reference Variables
     private Rigidbody enemyRigid;
     private GameObject targetToChase;
 
-    private const string PlayerTag = "Player";
-    private void Start()
+    // Constant Variables
+    private const string PLAYERTAG = "Player";
+    private void Awake()
     {
         enemyRigid = GetComponent<Rigidbody>();
-        targetToChase = GameObject.FindWithTag(PlayerTag);
+        targetToChase = GameObject.FindWithTag(PLAYERTAG);
     }
     private void Update()
     {
@@ -32,11 +41,17 @@ public class EnemyAI : MonoBehaviour
     }
     private void OnTriggerEnter(Collider collision)
     {
-        //Kill player upon contact
-        if (collision.gameObject.CompareTag(PlayerTag))
+        //Use health controller system
+        HealthController targetHealthController = collision.gameObject.GetComponent<HealthController>();
+        if (targetHealthController)
         {
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
-        }
+            //Damage player on contact, also take self damage and knock
+            if (collision.gameObject.CompareTag(PLAYERTAG))
+            {
+                targetHealthController.Damage(damage);
+                GetComponent<HealthController>().Damage(selfDamage);
+                enemyRigid.AddForce(-transform.forward * selfKnockPower, ForceMode.Impulse);
+            }
+        } 
     }
 }

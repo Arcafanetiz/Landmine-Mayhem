@@ -4,18 +4,24 @@ using UnityEngine;
 
 public class Landmine : MonoBehaviour
 {
+    // Landmine Settings
     [Header("Landmine Settings")]
-    [SerializeField] private float armingDistance;
+    [SerializeField] private float armingDistance = 2f; //Distance moved before landmine arms itself
+    [SerializeField] private float damage = 20f;        //Amount of damage the mine do
 
-    private bool landmineArmed = false;
+    // Reference Variables
     private GameObject mainCharacter;
 
-    private const string PlayerTag = "Player";
-    private const string EnemyTag = "Enemy";
-    private const int Zero = 0;
-    private void Start()
+    // Internal Variables
+    private bool landmineArmed = false;
+
+    // Constant Variables
+    private const string PLAYERTAG = "Player";
+    private const string ENEMYTAG = "Enemy";
+
+    private void Awake()
     {
-        mainCharacter = GameObject.FindWithTag(PlayerTag);
+        mainCharacter = GameObject.FindWithTag(PLAYERTAG);
     }
     private void Update()
     {
@@ -25,7 +31,7 @@ public class Landmine : MonoBehaviour
             if (Vector3.Distance(mainCharacter.transform.position, transform.position) > armingDistance)
             {
                 landmineArmed = true;
-                transform.GetChild(Zero).GetComponent<MeshRenderer>().enabled = true;
+                transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
             }
         }
     }
@@ -33,17 +39,21 @@ public class Landmine : MonoBehaviour
     {
         if (landmineArmed)
         {
-            //Kill player on contact
-            if (collision.gameObject.CompareTag(PlayerTag))
+            HealthController targetHealthController = collision.gameObject.GetComponent<HealthController>();
+            if (targetHealthController)
             {
-                Destroy(collision.gameObject);
-                Destroy(gameObject);
-            }
-            //Kill enemy on contact
-            if (collision.gameObject.CompareTag(EnemyTag))
-            {
-                Destroy(collision.gameObject);
-                Destroy(gameObject);
+                //Damage player on contact
+                if (collision.gameObject.CompareTag(PLAYERTAG))
+                {
+                    targetHealthController.Damage(damage);
+                    Destroy(gameObject);
+                }
+                //Damage enemy on contact
+                if (collision.gameObject.CompareTag(ENEMYTAG))
+                {
+                    targetHealthController.Damage(damage);
+                    Destroy(gameObject);
+                }
             }
         }
     }

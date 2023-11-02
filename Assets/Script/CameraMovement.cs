@@ -49,7 +49,7 @@ public class CameraMovement : MonoBehaviour
 
             //Check Obstruction
             float resultOrbit = orbit;
-            if (Physics.Raycast(transform.position, -transform.forward, out obstacleHit, maxOrbitToCheck, obstacleLayerMask))
+            if (Physics.Raycast(targetToFollow.position, -transform.forward, out obstacleHit, maxOrbitToCheck, obstacleLayerMask))
             {
                 resultOrbit = Mathf.Max(obstacleHit.distance, minOrbit);
             }

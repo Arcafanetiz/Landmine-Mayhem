@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 public class CharacterMovement : MonoBehaviour
 {
-    [Header("Attach GameObject")]
-    [SerializeField] private Transform mainCamera;
     [Header("Speed Settings")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float turnSpeed;
 
+    private Transform mainCamTransform;
     private Rigidbody characterRigid;
 
     private const string MoveForwardAxisName = "Vertical";
     private const string MoveStrafeAxisName = "Horizontal";
     private const int ClampLimit = 1;
     private const int Zero = 0;
-    private void Start()
+    private void Awake()
     {
         characterRigid = GetComponent<Rigidbody>();
+        mainCamTransform = Camera.main.transform;
     }
     private void FixedUpdate()
     {
@@ -28,8 +28,8 @@ public class CharacterMovement : MonoBehaviour
         Vector3 inputDirection = Vector3.zero;
 
         //Normalize camera pitch relative
-        Vector3 cameraForward = mainCamera.forward;
-        Vector3 cameraRight = mainCamera.right;
+        Vector3 cameraForward = mainCamTransform.forward;
+        Vector3 cameraRight = mainCamTransform.right;
         cameraForward.y = Zero;
         cameraRight.y = Zero;
         cameraForward.Normalize();

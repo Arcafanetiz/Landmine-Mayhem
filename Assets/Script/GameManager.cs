@@ -37,9 +37,12 @@ public class GameManager: MonoBehaviour
     private const int SecondPerMinute = 60;
     private const int Zero = 0;
     private const int One = 1;
-    private void Start()
+    private void Awake()
     {
         spawner = GetComponent<EnemySpawner>();
+    }
+    private void Start()
+    {
         timer = sessionLength;
         gameoverUI.SetActive(false);
     }
