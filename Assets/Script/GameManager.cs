@@ -15,7 +15,7 @@ public class GameManager: MonoBehaviour
     [HideInInspector] public bool gameComplete = false;
     [HideInInspector] public float timer = 0.0f;
 
-    // Attach Debug
+    // Runtime Debug
     [Header("Runtime Debug")]
     [SerializeField] private bool debugComplete = false;
 
@@ -139,15 +139,15 @@ public class GameManager: MonoBehaviour
         medkitContainer.SetActive(false);
     }
 
-    //Restart game
+    // Restart game
     public void ActionRestart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    //Return to main menus
+    // Return to main menus
     public void ActionMenu()
     {
-        Debug.Log("Hi! You wanted to go to the menu, but there's not one yet!");
+        SceneLoader.Load(SceneLoader.Scene.MainMenu);
     }
 }

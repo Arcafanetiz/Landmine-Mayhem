@@ -40,6 +40,7 @@ public class HealthBar : MonoBehaviour
     {
         mainCamTransform = Camera.main.transform;
     }
+
     private void Start()
     {
         // Setup the health bar, disable if health controller not found
@@ -56,6 +57,7 @@ public class HealthBar : MonoBehaviour
         healSection.localScale = new Vector3(0, 1, 1);
         damageSection.localScale = new Vector3(0, 1, 1);
     }
+
     private void Update()
     {
         if (targetHealthController)
@@ -121,15 +123,14 @@ public class HealthBar : MonoBehaviour
                 TickResolveHealthBar();
             }
         }
-    }
-    private void LateUpdate()
-    {
+
         //Billboard effect
         transform.SetPositionAndRotation(
             transform.parent.position + mainCamTransform.rotation * new Vector3(0, heightOffset, 0),
             mainCamTransform.rotation
             );
     }
+
     private void TickResolveHealthBar()
     {
         //Resolving the health bar animation using lerp and duration for synced bar movement
@@ -146,17 +147,21 @@ public class HealthBar : MonoBehaviour
             SetHealBar();
         }
     }
+
+    // Change the amount based on max health to percentage
     private float GetPercentage(float amount)
     {
         return (amount / MaxHealth);
     }
-    //Function to refresh heal bar position/size
+
+    // Function to refresh heal bar position/size
     private void SetHealBar()
     {
         healSection.position = healthCap.position;
         healSection.localScale = new Vector3(percToResolveHeal, 1, 1);
     }
-    //Function to refresh damage bar position/size
+
+    // Function to refresh damage bar position/size
     private void SetDamageBar()
     {
         damageSection.position = healCap.position;
