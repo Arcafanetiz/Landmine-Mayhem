@@ -60,6 +60,11 @@ public class HealthBar : MonoBehaviour
 
     private void Update()
     {
+        //Billboard effect
+        transform.SetPositionAndRotation(
+            transform.parent.position + mainCamTransform.rotation * new Vector3(0, heightOffset, 0),
+            mainCamTransform.rotation
+            );
         if (targetHealthController)
         {
             float newHealth = Health;
@@ -123,12 +128,6 @@ public class HealthBar : MonoBehaviour
                 TickResolveHealthBar();
             }
         }
-
-        //Billboard effect
-        transform.SetPositionAndRotation(
-            transform.parent.position + mainCamTransform.rotation * new Vector3(0, heightOffset, 0),
-            mainCamTransform.rotation
-            );
     }
 
     private void TickResolveHealthBar()

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1976270658257270930}
   - component: {fileID: 1696996494221848468}
   - component: {fileID: -2817064374816359912}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Medkit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 448
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -117,6 +117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c1a16f6199be364995e0791860c0971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minimumToHeal: 10
+  heal: 50
 --- !u!1001 &6439753944988055882
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -160,6 +162,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 425ef349ab0e6274ea45746ee20eb8a6, type: 3}
       propertyPath: m_Name
       value: Medkit
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 425ef349ab0e6274ea45746ee20eb8a6, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2040542448765327740, guid: 425ef349ab0e6274ea45746ee20eb8a6, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
