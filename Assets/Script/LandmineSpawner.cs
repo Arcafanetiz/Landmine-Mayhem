@@ -17,7 +17,7 @@ public class LandmineSpawner : MonoBehaviour
     {
         initialPlayerPosition = mainCharacter.position;
     }
-    private void Update()
+    private void FixedUpdate()
     {
         if (mainCharacter)
         {

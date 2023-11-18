@@ -10,7 +10,9 @@ public class ObjectiveMarker : MonoBehaviour
 {
     // Attach GameObjects
     [Header("Attach GameObjects")]
+    [SerializeField] private Transform canvasTransform;     // Canvas transform
     [SerializeField] private Transform objective;           // Objective transform
+    [SerializeField] private Transform onScreen;            // On Screen marker transform
     [SerializeField] private TextMeshProUGUI distanceLabel; // Distance label in the marker
     [SerializeField] private GameObject arrowPointer;       // Arrow pointer in the marker
 
@@ -39,11 +41,17 @@ public class ObjectiveMarker : MonoBehaviour
     private const float QUARTER = 90f; // 90 Degree number
     private const string DIST_FORMAT = "F0"; // Format for ToString distance, remove decimals
     private const string METER_TEXT = "m"; // Meter Text for distance label
+    private const string OBJECTIVECANVASTAG = "Objective Canvas";
 
     private void Awake()
     {
+        if (canvasTransform == null)
+        {
+            canvasTransform = GameObject.FindWithTag(OBJECTIVECANVASTAG).transform;
+        }
         mainCamera = Camera.main;
-        marker = GetComponent<RectTransform>();
+        marker = onScreen.GetComponent<RectTransform>();
+        onScreen.SetParent(canvasTransform, false);
     }
     private void Update()
     {
@@ -51,6 +59,12 @@ public class ObjectiveMarker : MonoBehaviour
         UpdateMarkerArrow();
         UpdateDistanceLabel();
     }
+
+    private void OnDestroy()
+    {
+        Destroy(onScreen.gameObject);
+    }
+
     // Function to update marker's position
     private void UpdateMarkerPosition()
     {

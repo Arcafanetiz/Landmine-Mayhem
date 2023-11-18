@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
@@ -10,6 +11,7 @@ public class GameManager: MonoBehaviour
 {
     // Static Variables
     [HideInInspector] public static float EnemySpeed;
+    [HideInInspector] public static bool GamePaused;
 
     // External Variables
     [HideInInspector] public bool gameComplete = false;
@@ -27,8 +29,9 @@ public class GameManager: MonoBehaviour
     [SerializeField] private GameObject medkitContainer;
     [SerializeField] private GameObject gameoverUI;
     [SerializeField] private GameObject timerUI;
-    [SerializeField] private Text gameoverTextLabel;
-    [SerializeField] private Text timerTextLabel;
+    [SerializeField] private GameObject pauseUI;
+    [SerializeField] private TextMeshProUGUI gameoverText;
+    [SerializeField] private TextMeshProUGUI timerText;
 
     // Time Settings
     [Header("Time Settings")]
@@ -64,27 +67,28 @@ public class GameManager: MonoBehaviour
     {
         timer = sessionLength;
         gameoverUI.SetActive(false);
+        ResumeGame();
     }
 
     private void Update()
     {
         if (!mainCharacter)
         {
-            //Do game over if character dies
+            // Do game over if character dies
             DoGameover();
         }
-        else
+        else if (!GamePaused)
         {
-            //Run timer
+            // Run timer
             timer -= Time.deltaTime;
             int seconds = (int)(timer % SecondPerMinute);
             int minutes = (int)(timer / SecondPerMinute);
 
-            //Apply timer to interface
+            // Apply timer to interface
             string timerString = string.Format(TimerFormat, minutes, seconds);
-            timerTextLabel.text = timerString;
+            timerText.text = timerString;
 
-            //Game State based on timer
+            // Game State based on timer
             if ((timer <= Zero) && !gameComplete)
             {
                 DoWin();
@@ -94,10 +98,10 @@ public class GameManager: MonoBehaviour
                 DoWin();
             }
 
-            //Increase enemy speed from max session length to win time
+            // Increase enemy speed from max session length to win time
             EnemySpeed = Mathf.Lerp(enemySpeedStart, enemySpeedMax, One - (timer / sessionLength));
 
-            //Spawns enemy every second
+            // Spawns enemy every second
             if (lastSecondSpawned != seconds)
             {
                 enemySpawner.SpawnEnemy();
@@ -111,25 +115,37 @@ public class GameManager: MonoBehaviour
                 lastMinuteMedkit = minutes;
             }
         }
+        // Game Pausing
+        if (Input.GetKeyDown(KeyCode.Escape) && !gameComplete)
+        {
+            if (!GamePaused)
+            {
+                PauseGame();
+            }
+            else
+            {
+                ResumeGame();
+            }
+        }
     }
 
-    //Main function for winning
-    public void DoWin()
+    // Main function for winning
+    private void DoWin()
     {
         CompleteGame();
-        gameoverTextLabel.text = WinnerText;
+        gameoverText.text = WinnerText;
         gameoverUI.SetActive(true);
         timerUI.SetActive(false);
     }
 
-    //Main function for losing
-    public void DoGameover()
+    // Main function for losing
+    private void DoGameover()
     {
         CompleteGame();
         gameoverUI.SetActive(true);
     }
 
-    //Sub function complete game, used by both win/lost
+    // Sub function complete game, used by both win/lost
     private void CompleteGame()
     {
         gameComplete = true;
@@ -137,6 +153,34 @@ public class GameManager: MonoBehaviour
         enemyContainer.SetActive(false);
         trapContainer.SetActive(false);
         medkitContainer.SetActive(false);
+    }
+
+    // Internal Function, Pause
+    private void PauseGame()
+    {
+        GamePaused = true;
+        Time.timeScale = 0;
+        AudioListener.pause = true;
+        Cursor.lockState = CursorLockMode.None;
+        pauseUI.SetActive(true);
+        timerUI.SetActive(false);
+    }
+
+    // Internal Function, Resume
+    private void ResumeGame()
+    {
+        GamePaused = false;
+        Time.timeScale = 1;
+        AudioListener.pause = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        pauseUI.SetActive(false);
+        timerUI.SetActive(true);
+    }
+
+    // Resume game
+    public void ActionResume()
+    {
+        ResumeGame();
     }
 
     // Restart game

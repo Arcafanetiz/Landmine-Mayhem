@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Landmine : MonoBehaviour
 {
+    // Attach GameObject
+    [Header("Attach GameObject")]
+    [SerializeField] private Transform hitSFX;
+
     // Landmine Settings
     [Header("Landmine Settings")]
     [SerializeField] private float armingDistance = 2f; //Distance moved before landmine arms itself
@@ -11,6 +15,7 @@ public class Landmine : MonoBehaviour
 
     // Reference Variables
     private GameObject mainCharacter;
+    private AudioSource hitSFXSource;
 
     // Internal Variables
     private bool landmineArmed = false;
@@ -22,8 +27,9 @@ public class Landmine : MonoBehaviour
     private void Awake()
     {
         mainCharacter = GameObject.FindWithTag(PLAYERTAG);
+        hitSFXSource = hitSFX.GetComponent<AudioSource>();
     }
-    private void Update()
+    private void FixedUpdate()
     {
         if (!landmineArmed)
         {
@@ -42,16 +48,13 @@ public class Landmine : MonoBehaviour
             HealthController targetHealthController = collision.gameObject.GetComponent<HealthController>();
             if (targetHealthController)
             {
-                //Damage player on contact
-                if (collision.gameObject.CompareTag(PLAYERTAG))
+                //Damage player or enemy on contact
+                if (collision.gameObject.CompareTag(PLAYERTAG) || collision.gameObject.CompareTag(ENEMYTAG))
                 {
                     targetHealthController.Damage(damage);
-                    Destroy(gameObject);
-                }
-                //Damage enemy on contact
-                if (collision.gameObject.CompareTag(ENEMYTAG))
-                {
-                    targetHealthController.Damage(damage);
+                    hitSFX.parent = transform.parent;
+                    hitSFXSource.time = 0.14f;
+                    hitSFXSource.Play();
                     Destroy(gameObject);
                 }
             }

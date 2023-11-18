@@ -26,7 +26,7 @@ public class EnemySpawner : MonoBehaviour
     {
         enemySpawns = spawnSet.GetComponentsInChildren<Transform>();
     }
-    private void Update()
+    private void FixedUpdate()
     {
         enemyCount = enemyHolder.childCount;
     }

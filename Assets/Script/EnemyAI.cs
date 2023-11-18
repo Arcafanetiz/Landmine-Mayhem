@@ -26,7 +26,7 @@ public class EnemyAI : MonoBehaviour
         enemyRigid = GetComponent<Rigidbody>();
         targetToChase = GameObject.FindWithTag(PLAYERTAG);
     }
-    private void Update()
+    private void FixedUpdate()
     {
         moveSpeed = GameManager.EnemySpeed;
         if (targetToChase)
