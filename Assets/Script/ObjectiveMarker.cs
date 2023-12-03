@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -31,16 +30,16 @@ public class ObjectiveMarker : MonoBehaviour
     private RectTransform marker; // Marker recttransform
 
     // Internal Variables
-    private float currentArrowAlpha = 0; // Current alpha of distance label
-    private float currentLabelAlpha = 0; // Current alpha of distance label
-    private Vector2 normalizedPosition;  // Position of the marker
-    private Boolean outsideBound;        // Marker outside ellipse
+    private float currentArrowAlpha = 0;    // Current alpha of distance label
+    private float currentLabelAlpha = 0;    // Current alpha of distance label
+    private Vector2 normalizedPosition;     // Position of the marker
+    private bool outsideBound;              // Marker outside ellipse
 
     // Constant Variables
     private const float HALVE = 0.5f;  // Half value number
     private const float QUARTER = 90f; // 90 Degree number
-    private const string DIST_FORMAT = "F0"; // Format for ToString distance, remove decimals
-    private const string METER_TEXT = "m"; // Meter Text for distance label
+    private const string DIST_FORMAT = "F0";    // Format for ToString distance, remove decimals
+    private const string METER_TEXT = "m";      // Meter Text for distance label
     private const string OBJECTIVECANVASTAG = "Objective Canvas";
 
     private void Awake()
@@ -52,6 +51,10 @@ public class ObjectiveMarker : MonoBehaviour
         mainCamera = Camera.main;
         marker = onScreen.GetComponent<RectTransform>();
         onScreen.SetParent(canvasTransform, false);
+
+        UpdateMarkerPosition();
+        UpdateMarkerArrow();
+        UpdateDistanceLabel();
     }
     private void Update()
     {

@@ -5,18 +5,23 @@ using UnityEngine.TextCore.Text;
 
 public class LandmineSpawner : MonoBehaviour
 {
+    // Attached Variables
     [Header("Attach GameObject")]
-    [SerializeField] private GameObject landminePrefab;
-    [SerializeField] private Transform mainCharacter;
-    [SerializeField] private Transform trapHolder;
+    [SerializeField] private GameObject landminePrefab; // Landmine Prefab
+    [SerializeField] private Transform mainCharacter;   // Main Character
+    [SerializeField] private Transform trapContainer;   // Container
+
+    // Spawner Settings
     [Header("Landmine Spawner Settings")]
-    [SerializeField] private float spawnThreshold = 3;
+    [SerializeField] private float spawnThreshold = 3;  // How far apart should mine spawn as player move
 
     private Vector3 initialPlayerPosition;
+
     private void Start()
     {
         initialPlayerPosition = mainCharacter.position;
     }
+
     private void FixedUpdate()
     {
         if (mainCharacter)
@@ -27,7 +32,7 @@ public class LandmineSpawner : MonoBehaviour
             if (distanceMoved >= spawnThreshold)
             {
                 GameObject newLandmine = Instantiate(landminePrefab, mainCharacter.position, Quaternion.identity);
-                newLandmine.transform.parent = trapHolder;
+                newLandmine.transform.parent = trapContainer;
                 initialPlayerPosition = mainCharacter.position;
             }
         }

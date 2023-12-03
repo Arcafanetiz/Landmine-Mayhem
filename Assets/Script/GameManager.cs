@@ -1,50 +1,50 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.TextCore.Text;
-using UnityEngine.UI;
 
 public class GameManager: MonoBehaviour
 {
     // Static Variables
-    [HideInInspector] public static float EnemySpeed;
-    [HideInInspector] public static bool GamePaused;
+    [HideInInspector] public static float EnemySpeed;   // Speed of Enemies
+    [HideInInspector] public static bool GamePaused;    // Pause Game State
 
     // External Variables
-    [HideInInspector] public bool gameComplete = false;
-    [HideInInspector] public float timer = 0.0f;
+    [HideInInspector] public bool gameComplete = false; // Game is Completed
+    [HideInInspector] public float timer = 0.0f;        // Game Timer
 
-    // Runtime Debug
-    [Header("Runtime Debug")]
-    [SerializeField] private bool debugComplete = false;
-
-    // Attach GameObject
+    // Attached Variables
     [Header("Attach GameObject")]
-    [SerializeField] private Transform mainCharacter;
-    [SerializeField] private GameObject enemyContainer;
-    [SerializeField] private GameObject trapContainer;
-    [SerializeField] private GameObject medkitContainer;
-    [SerializeField] private GameObject gameoverUI;
-    [SerializeField] private GameObject timerUI;
-    [SerializeField] private GameObject pauseUI;
-    [SerializeField] private TextMeshProUGUI gameoverText;
-    [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private GameObject SettingFrame;       // Setting UI Frame
+    [SerializeField] private GameObject victorySFXPrefab;   // Victory Sound
+    [SerializeField] private Transform mainCharacter;       // Main Character
+    [SerializeField] private GameObject enemyContainer;     // Enemy Container
+    [SerializeField] private GameObject trapContainer;      // Trap Container
+    [SerializeField] private GameObject medkitContainer;    // Medkit Container
+    [SerializeField] private GameObject objectiveUI;        // Objective Interface
+    [SerializeField] private GameObject gameoverUI;         // Gameover Interface
+    [SerializeField] private GameObject timerUI;            // Timer Interface
+    [SerializeField] private GameObject pauseUI;            // Pause Interface
+    [SerializeField] private TextMeshProUGUI gameoverText;  // Gameover Text
+    [SerializeField] private TextMeshProUGUI timerText;     // Timer Text
 
     // Time Settings
     [Header("Time Settings")]
-    [SerializeField] private int sessionLength = 300;
+    [SerializeField] private int sessionLength = 300;   // How long a session lasts in seconds
 
     // Enemy Speed Settings
     [Header("Enemy Speed Range Settings")]
-    [SerializeField] private float enemySpeedStart = 1.0f;
-    [SerializeField] private float enemySpeedMax = 5.0f;
+    [SerializeField] private float enemySpeedStart = 1.0f;  // Speed of the enemy from start
+    [SerializeField] private float enemySpeedMax = 5.0f;    // Speed of the enemy to end
 
-    // Referernce Variables
+    // Reference Variables
     private EnemySpawner enemySpawner;
     private MedkitSpawner medkitSpawner;
+
+    // Encapsulated Variables
+    private float TimeLengthToEnd => 1 - (timer / sessionLength);
+    private bool SettingOpen => SettingFrame.activeSelf;
 
     // Internal Variables
     private int lastSecondSpawned = 0;
@@ -54,8 +54,6 @@ public class GameManager: MonoBehaviour
     private const string TimerFormat = "{0}:{1:00}";
     private const string WinnerText = "YOU WIN!";
     private const int SecondPerMinute = 60;
-    private const int Zero = 0;
-    private const int One = 1;
 
     private void Awake()
     {
@@ -89,17 +87,13 @@ public class GameManager: MonoBehaviour
             timerText.text = timerString;
 
             // Game State based on timer
-            if ((timer <= Zero) && !gameComplete)
-            {
-                DoWin();
-            }
-            if (debugComplete && !gameComplete)
+            if ((timer <= 0) && !gameComplete)
             {
                 DoWin();
             }
 
             // Increase enemy speed from max session length to win time
-            EnemySpeed = Mathf.Lerp(enemySpeedStart, enemySpeedMax, One - (timer / sessionLength));
+            EnemySpeed = Mathf.Lerp(enemySpeedStart, enemySpeedMax, TimeLengthToEnd);
 
             // Spawns enemy every second
             if (lastSecondSpawned != seconds)
@@ -109,7 +103,7 @@ public class GameManager: MonoBehaviour
             lastSecondSpawned = seconds;
 
             // Spawns medkit every minute
-            if (seconds == 0 && lastMinuteMedkit != minutes)
+            if (seconds == 0 && lastMinuteMedkit != minutes && timer < 290)
             {
                 medkitSpawner.SpawnMedkit();
                 lastMinuteMedkit = minutes;
@@ -124,7 +118,14 @@ public class GameManager: MonoBehaviour
             }
             else
             {
-                ResumeGame();
+                if (!SettingOpen)
+                {
+                    ResumeGame();
+                }
+                else
+                {
+                    SettingFrame.SetActive(false);
+                }
             }
         }
     }
@@ -132,6 +133,7 @@ public class GameManager: MonoBehaviour
     // Main function for winning
     private void DoWin()
     {
+        GameObject victoryNoise = Instantiate(victorySFXPrefab);
         CompleteGame();
         gameoverText.text = WinnerText;
         gameoverUI.SetActive(true);
@@ -153,6 +155,7 @@ public class GameManager: MonoBehaviour
         enemyContainer.SetActive(false);
         trapContainer.SetActive(false);
         medkitContainer.SetActive(false);
+        objectiveUI.SetActive(false);
     }
 
     // Internal Function, Pause
@@ -187,6 +190,15 @@ public class GameManager: MonoBehaviour
     public void ActionRestart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    // Open Setting
+    public void ActionSetting()
+    {
+        if (!SettingOpen)
+        {
+            SettingFrame.SetActive(true);
+        }
     }
 
     // Return to main menus

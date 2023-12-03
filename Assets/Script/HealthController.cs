@@ -28,14 +28,6 @@ public class HealthController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Damage(Random.Range(5, 10));
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Heal(Random.Range(5, 10));
-        }
     }
 
     // External function to Heal

@@ -1,66 +1,60 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    // Attached Variables
     [Header("Attach GameObject")]
-    [SerializeField] private Transform mainCharacter;
-    [SerializeField] private Transform enemyHolder;
-    [SerializeField] private Transform spawnSet;
+    [SerializeField] private Transform mainCharacter;   // The main character to target
+    [SerializeField] private Transform enemyContainer;  // The container for enemy
 
-    [Header("Spawn Y Offset Settings")]
-    [SerializeField] private float spawnYOffset = 1;
-
+    // Spawn Settings
     [Header("Enemy Spawn Settings")]
-    [SerializeField] private int maxEnemy = 10;
-    [SerializeField] private GameObject enemyPrefab;
-    [SerializeField] private float minimumDistance = 3;
+    [SerializeField] private GameObject enemyPrefab;        // Enemy prefab to use
+    [SerializeField] private int maxEnemy = 10;             // Maximum enemy at a time
+    [SerializeField] private float spawnDistance = 45;      // Spawn Distance of the enemy
+    [SerializeField] private float spawnHeightOffset = 1;   // Spawn Height of the enemy
 
-    private Transform[] enemySpawns;
+    // Internal Variables
     private int enemyCount;
 
-    private void Awake()
-    {
-        enemySpawns = spawnSet.GetComponentsInChildren<Transform>();
-    }
     private void FixedUpdate()
     {
-        enemyCount = enemyHolder.childCount;
+        enemyCount = enemyContainer.childCount;
     }
+
     public void SpawnEnemy()
     {
         // Check if maximum amount of enemy exists
         if (enemyCount < maxEnemy)
         {
-            // Retry 3 times, fails when spawn is too close
-            Boolean spawned = false;
-            int tries = 0;
-            while (!spawned && tries < 3)
+            // Spawn location on the primary axis
+            float spawnPrimary = Random.Range(-1f, 1f) > 0f ? -spawnDistance : spawnDistance;
+
+            // Spawn location along the secondary axis
+            float spawnSecondary = Random.Range(-spawnDistance, spawnDistance);
+
+            // Choose axis as primary
+            bool spawnXOrZ = Random.Range(0, 2) == 0;
+
+            Vector3 spawnPosition;
+            if (spawnXOrZ)
             {
-                tries++;
-                // Choose random spawn
-                int randomIndex = UnityEngine.Random.Range(1, enemySpawns.Length);
-                Transform spawnPoint = enemySpawns[randomIndex];
-                // Try new spawn if distance is too close
-                if ((spawnPoint.position - mainCharacter.position).magnitude > minimumDistance)
-                {
-                    // Calculate spawn position
-                    Vector3 spawnPosition = spawnPoint.position + Vector3.up * spawnYOffset;
-                    // Calculate the direction from the enemy to the main character
-                    Vector3 directionToMainCharacter = mainCharacter.position - spawnPosition;
-                    // Calculate the rotation needed to face the main character
-                    Quaternion rotation = Quaternion.LookRotation(directionToMainCharacter);
-
-                    // Instantiate the enemy with the desired rotation and parent to the holder
-                    GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, rotation);
-                    newEnemy.transform.parent = enemyHolder;
-
-                    spawned = true;
-                }
+                spawnPosition = new Vector3(spawnPrimary, spawnHeightOffset, spawnSecondary);
             }
+            else
+            {
+                spawnPosition = new Vector3(spawnSecondary, spawnHeightOffset, spawnPrimary);
+            }
+
+            // Calculate the rotation needed to face the main character
+            Vector3 directionToMainCharacter = mainCharacter.position - spawnPosition;
+            Quaternion rotation = Quaternion.LookRotation(directionToMainCharacter);
+
+            // Instantiate the enemy with the desired rotation and parent to the container
+            GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, rotation);
+            newEnemy.transform.parent = enemyContainer;
         }
     }
 }

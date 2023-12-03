@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class Landmine : MonoBehaviour
 {
-    // Attach GameObject
+    // Attached Variables
     [Header("Attach GameObject")]
-    [SerializeField] private Transform hitSFX;
+    [SerializeField] private GameObject model;      // Model of the mine
+    [SerializeField] private GameObject beep;       // Light part of the mine
+    [SerializeField] private Transform hitSFX;      // Hit Sound
+    [SerializeField] private VisualEffect hitVFX;   // Hit Effect
 
     // Landmine Settings
     [Header("Landmine Settings")]
@@ -14,11 +18,12 @@ public class Landmine : MonoBehaviour
     [SerializeField] private float damage = 20f;        //Amount of damage the mine do
 
     // Reference Variables
-    private GameObject mainCharacter;
+    private Transform mainCharacter;
     private AudioSource hitSFXSource;
 
     // Internal Variables
     private bool landmineArmed = false;
+    private bool landmineExploded = false;
 
     // Constant Variables
     private const string PLAYERTAG = "Player";
@@ -26,36 +31,44 @@ public class Landmine : MonoBehaviour
 
     private void Awake()
     {
-        mainCharacter = GameObject.FindWithTag(PLAYERTAG);
+        mainCharacter = GameObject.FindWithTag(PLAYERTAG).transform;
         hitSFXSource = hitSFX.GetComponent<AudioSource>();
     }
+
     private void FixedUpdate()
     {
         if (!landmineArmed)
         {
             //Arm landmine when player is out of distance
-            if (Vector3.Distance(mainCharacter.transform.position, transform.position) > armingDistance)
+            if (Vector3.Distance(mainCharacter.position, transform.position) > armingDistance)
             {
                 landmineArmed = true;
-                transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
+                beep.SetActive(true);
             }
         }
     }
+
     private void OnTriggerEnter(Collider collision)
     {
-        if (landmineArmed)
+        if (landmineArmed && !landmineExploded)
         {
-            HealthController targetHealthController = collision.gameObject.GetComponent<HealthController>();
+            HealthController targetHealthController = collision.GetComponent<HealthController>();
             if (targetHealthController)
             {
                 //Damage player or enemy on contact
-                if (collision.gameObject.CompareTag(PLAYERTAG) || collision.gameObject.CompareTag(ENEMYTAG))
+                if (collision.CompareTag(PLAYERTAG) || collision.CompareTag(ENEMYTAG))
                 {
+                    landmineExploded = true;
                     targetHealthController.Damage(damage);
-                    hitSFX.parent = transform.parent;
-                    hitSFXSource.time = 0.14f;
+                    float randomPitch = Random.Range(0.8f, 1.2f);
+                    hitSFXSource.pitch = randomPitch;
                     hitSFXSource.Play();
-                    Destroy(gameObject);
+                    hitVFX.Play();
+
+                    model.SetActive(false);
+                    beep.SetActive(false);
+
+                    Destroy(gameObject, hitSFXSource.clip.length * 1.5f);
                 }
             }
         }
