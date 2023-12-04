@@ -7,12 +7,14 @@ public class MainMenu : MonoBehaviour
 {
     // Attached Variables
     [Header("Attach GameObject")]
-    [SerializeField] private GameObject SettingFrame;   // Setting Game Object
-    [SerializeField] private GameObject CreditFrame;    // Credit Game Object
+    [SerializeField] private GameObject SettingFrame;   // Setting UI Frame
+    [SerializeField] private GameObject CreditFrame;    // Credit UI Frame
+    [SerializeField] private GameObject TutorialFrame;  // Tutorial UI Frame
 
     // Encapsulated Variables
     private bool SettingOpen => SettingFrame.activeSelf;
     private bool CreditOpen => CreditFrame.activeSelf;
+    private bool TutorialOpen => TutorialFrame.activeSelf;
 
     private void Update()
     {
@@ -25,6 +27,10 @@ public class MainMenu : MonoBehaviour
             else if (CreditOpen)
             {
                 CreditFrame.SetActive(false);
+            }
+            else if (TutorialOpen)
+            {
+                TutorialFrame.SetActive(false);
             }
         }
     }
@@ -42,10 +48,26 @@ public class MainMenu : MonoBehaviour
         {
             SettingFrame.SetActive(true);
             CreditFrame.SetActive(false);
+            TutorialFrame.SetActive(false);
         }
         else
         {
             SettingFrame.SetActive(false);
+        }
+    }
+
+    // Open Tutorial
+    public void ActionTutorial()
+    {
+        if (!TutorialOpen)
+        {
+            TutorialFrame.SetActive(true);
+            CreditFrame.SetActive(false);
+            SettingFrame.SetActive(false);
+        }
+        else
+        {
+            TutorialFrame.SetActive(false);
         }
     }
 
@@ -56,6 +78,7 @@ public class MainMenu : MonoBehaviour
         {
             CreditFrame.SetActive(true);
             SettingFrame.SetActive(false);
+            TutorialFrame.SetActive(false);
         }
         else
         {
